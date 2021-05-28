@@ -64,6 +64,9 @@ public:
      **/
     QRegion region();
 
+Q_SIGNALS:
+    void regionChanged();
+
 private:
     explicit BlurInterface(wl_resource *resource);
     friend class BlurManagerInterfacePrivate;

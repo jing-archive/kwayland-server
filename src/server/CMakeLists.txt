@@ -1,3 +1,6 @@
+remove_definitions(-DQT_NO_CAST_FROM_ASCII)
+remove_definitions(-DQT_NO_CAST_TO_ASCII)
+
 set(SERVER_LIB_SRCS
     abstract_data_source.cpp
     appmenu_interface.cpp
@@ -289,6 +292,7 @@ target_include_directories(KWaylandServer INTERFACE "$<INSTALL_INTERFACE:${KDE_I
 
 target_link_libraries(KWaylandServer
     PUBLIC
+        Qt5::DBus
         Qt5::Gui
         Wayland::Server
     PRIVATE

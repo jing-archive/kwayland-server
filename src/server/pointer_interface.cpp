@@ -32,6 +32,7 @@ public:
     void update(const QPointer<SurfaceInterface> &surface, quint32 serial, const QPoint &hotspot);
 
 private:
+    qreal oldScale = 1.;
     Cursor *q;
 };
 

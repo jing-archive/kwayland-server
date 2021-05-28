@@ -637,11 +637,18 @@ QPointF SeatInterface::pointerPos() const
 void SeatInterface::setPointerPos(const QPointF &pos)
 {
     Q_D();
-    if (d->globalPointer.pos == pos) {
+
+    // casper_yang for scale
+    qreal eventScale = 1.;
+    if (d->globalPointer.focus.surface) {
+        eventScale = d->globalPointer.focus.surface->getInputAreaScale();
+    }
+    QPointF newPos = pos / eventScale;
+    if (d->globalPointer.pos == newPos) {
         return;
     }
-    d->globalPointer.pos = pos;
-    emit pointerPosChanged(pos);
+    d->globalPointer.pos = newPos;
+    emit pointerPosChanged(newPos);
 }
 
 quint32 SeatInterface::timestamp() const
@@ -975,7 +982,7 @@ void SeatInterface::relativePointerMotion(const QSizeF &delta, const QSizeF &del
     Q_D();
     if (d->globalPointer.focus.surface) {
         for (auto it = d->globalPointer.focus.pointers.constBegin(), end = d->globalPointer.focus.pointers.constEnd(); it != end; ++it) {
-            (*it)->relativeMotion(delta, deltaNonAccelerated, microseconds);
+            (*it)->relativeMotion(delta / d->globalPointer.focus.surface->getInputAreaScale(), deltaNonAccelerated, microseconds);
         }
     }
 }
@@ -1255,13 +1262,21 @@ qint32 SeatInterface::touchDown(const QPointF &globalPosition)
     Q_D();
     const qint32 id = d->globalTouch.ids.isEmpty() ? 0 : d->globalTouch.ids.lastKey() + 1;
     const qint32 serial = display()->nextSerial();
-    const auto pos = globalPosition - d->globalTouch.focus.offset;
+
+    // casper_yang for scale
+    qreal eventScale = 1.;
+    if (d->globalTouch.focus.surface) {
+        eventScale = d->globalTouch.focus.surface->getInputAreaScale();
+    }
+
+    const auto pos = (globalPosition - d->globalTouch.focus.offset) / eventScale;
     for (auto it = d->globalTouch.focus.touchs.constBegin(), end = d->globalTouch.focus.touchs.constEnd(); it != end; ++it) {
         (*it)->down(id, serial, pos);
     }
 
     if (id == 0) {
-        d->globalTouch.focus.firstTouchPos = globalPosition;
+        // casper_yang for scale
+        d->globalTouch.focus.firstTouchPos = globalPosition / eventScale;
     }
 
 #if HAVE_LINUX_INPUT_H
@@ -1291,13 +1306,19 @@ void SeatInterface::touchMove(qint32 id, const QPointF &globalPosition)
 {
     Q_D();
     Q_ASSERT(d->globalTouch.ids.contains(id));
-    const auto pos = globalPosition - d->globalTouch.focus.offset;
+    // casper_yang for scale
+    qreal eventScale = 1.;
+    if (d->globalTouch.focus.surface) {
+        eventScale = d->globalTouch.focus.surface->getInputAreaScale();
+    }
+    const auto pos = (globalPosition - d->globalTouch.focus.offset) / eventScale;
     for (auto it = d->globalTouch.focus.touchs.constBegin(), end = d->globalTouch.focus.touchs.constEnd(); it != end; ++it) {
         (*it)->move(id, pos);
     }
 
     if (id == 0) {
-        d->globalTouch.focus.firstTouchPos = globalPosition;
+        // casper_yang for scale
+        d->globalTouch.focus.firstTouchPos = globalPosition / eventScale;
     }
 
     if (id == 0 && d->globalTouch.focus.touchs.isEmpty()) {
@@ -1310,7 +1331,8 @@ void SeatInterface::touchMove(qint32 id, const QPointF &globalPosition)
             }
         );
     }
-    emit touchMoved(id, d->globalTouch.ids[id], globalPosition);
+    // casper_yang for scale
+    emit touchMoved(id, d->globalTouch.ids[id], globalPosition / eventScale);
 }
 
 void SeatInterface::touchUp(qint32 id)

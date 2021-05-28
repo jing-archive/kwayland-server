@@ -105,6 +105,8 @@ void BlurInterfacePrivate::org_kde_kwin_blur_set_region(Resource *resource, wl_r
     } else {
         pendingRegion = QRegion();
     }
+
+    emit q->regionChanged();
 }
 
 void BlurInterfacePrivate::org_kde_kwin_blur_release(Resource *resource)

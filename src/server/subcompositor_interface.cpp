@@ -120,10 +120,12 @@ void SubSurfaceInterfacePrivate::subsurface_set_position(Resource *resource, int
     }
 #endif
     Q_UNUSED(resource)
-    if (pendingPosition == QPoint(x, y)) {
+    QPoint p(x, y);
+    p /= q->surface()->getInputAreaScale();
+    if (pendingPosition == p) {
         return;
     }
-    pendingPosition = QPoint(x, y);
+    pendingPosition = p;
     hasPendingPosition = true;
 }
 

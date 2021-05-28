@@ -365,6 +365,11 @@ public:
      **/
     SurfaceInterface* dataProxy() const;
 
+    // casper_yang for scale
+    void setInputAreaScale(qreal scale);
+
+    qreal getInputAreaScale();
+
 Q_SIGNALS:
     /**
      * This signal is emitted when the underlying wl_surface resource is about to be freed.
@@ -392,6 +397,7 @@ Q_SIGNALS:
      * @see buffer
      * @see damage
      **/
+    void inputAreaScaleChanged(qreal scale);
     void damaged(const QRegion&);
     void opaqueChanged(const QRegion&);
     void inputChanged(const QRegion&);

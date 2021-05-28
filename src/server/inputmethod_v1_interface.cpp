@@ -380,7 +380,7 @@ public:
         }
     }
 
-    QPointer<InputMethodContextV1Interface> m_context;
+    QScopedPointer<InputMethodContextV1Interface> m_context;
     InputMethodV1Interface *const q;
     Display *const m_display;
 
@@ -402,7 +402,7 @@ void InputMethodV1Interface::sendActivate()
     }
 
     Q_ASSERT(!d->m_context);
-    d->m_context = new InputMethodContextV1Interface(this);
+    d->m_context.reset(new InputMethodContextV1Interface(this));
 
     d->m_enabled = true;
     for (auto resource : d->resourceMap()) {
@@ -423,13 +423,13 @@ void InputMethodV1Interface::sendDeactivate()
             auto connection = d->m_context->d->resourceMap().value(resource->client());
             d->send_deactivate(resource->handle, connection->handle);
         }
-        d->m_context = nullptr;
+        d->m_context.reset();
     }
 }
 
 InputMethodContextV1Interface *InputMethodV1Interface::context() const
 {
-    return d->m_context;
+    return d->m_context.data();
 }
 
 }

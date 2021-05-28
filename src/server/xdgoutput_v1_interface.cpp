@@ -41,6 +41,10 @@ public:
     bool dirty = false;
     bool doneOnce = false;
 
+    // casper_yang for scale
+    qreal appDefaultScale = 1.;
+    QHash<wl_client*, qreal> clientsScale;
+
 protected:
     void zxdg_output_v1_bind_resource(Resource *resource) override;
     void zxdg_output_v1_destroy(Resource *resource) override;
@@ -132,7 +136,12 @@ void XdgOutputV1Interface::setLogicalSize(const QSize &size)
     d->size = size;
     d->dirty = true;
     for (auto resource : d->resourceMap()) {
-        d->send_logical_size(resource->handle, size.width(), size.height());
+        // casper_yang for scale
+        qreal _scale = d->appDefaultScale;
+        if (d->clientsScale.contains(resource->client())) {
+            _scale = d->clientsScale[resource->client()];
+        }
+        d->send_logical_size(resource->handle, size.width()/_scale, size.height()/_scale);
     }
 }
 
@@ -182,6 +191,47 @@ void XdgOutputV1Interface::done()
     }
 }
 
+// casper_yang for scale
+void XdgOutputV1Interface::setClientScale(wl_client *client, qreal scale)
+{
+    d->clientsScale.insert(client, scale);
+    bool dirty = false;
+    for (auto resource : d->resourceMap()) {
+        // casper_yang for scale
+        if (resource->client() == client) {
+            d->send_logical_size(resource->handle, d->size.width()/scale, d->size.height()/scale);
+            d->send_done(resource->handle);
+            dirty = true;
+        }
+    }
+
+    d->dirty = dirty;
+}
+
+// casper_yang for scale
+void XdgOutputV1Interface::unsetClientScale(wl_client *client)
+{
+    d->clientsScale.remove(client);
+}
+
+void XdgOutputV1Interface::setAppDefaultScale(qreal scale)
+{
+//    d->appDefaultScale = scale;
+
+//    d->dirty = true;
+//    for (auto resource : d->resourceMap()) {
+//        // casper_yang for scale
+//        qreal _scale = d->appDefaultScale;
+//        if (d->clientsScale.contains(resource->client())) {
+//            _scale = d->clientsScale[resource->client()];
+//        }
+//        qDebug()<<"jingos_scale XdgOutputV1Interface::setAppDefaultScale:"<<_scale;
+//        d->send_logical_size(resource->handle, d->size.width()/_scale, d->size.height()/_scale);
+//    }
+
+//    done();
+}
+
 void XdgOutputV1InterfacePrivate::zxdg_output_v1_destroy(Resource *resource)
 {
     wl_resource_destroy(resource->handle);
@@ -190,7 +240,12 @@ void XdgOutputV1InterfacePrivate::zxdg_output_v1_destroy(Resource *resource)
 void XdgOutputV1InterfacePrivate::zxdg_output_v1_bind_resource(Resource *resource)
 {
     send_logical_position(resource->handle, pos.x(), pos.y());
-    send_logical_size(resource->handle, size.width(), size.height());
+    // casper_yang for scale
+    qreal _scale = appDefaultScale;
+    if (clientsScale.contains(resource->client())) {
+        _scale = clientsScale[resource->client()];
+    }
+    send_logical_size(resource->handle, size.width()/_scale, size.height()/_scale);
     if (resource->version() >= ZXDG_OUTPUT_V1_NAME_SINCE_VERSION) {
         send_name(resource->handle, name);
     }

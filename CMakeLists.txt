@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 set(PROJECT_VERSION "5.20.80")
 set(PROJECT_VERSION_MAJOR 5)
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
+set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 set(QT_MIN_VERSION "5.15.0")
 set(KF5_MIN_VERSION "5.74")
@@ -39,7 +42,7 @@ ecm_setup_version(PROJECT VARIABLE_PREFIX KWAYLANDSERVER
                         SOVERSION 5)
 
 # Dependencies
-find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED Concurrent Gui WaylandClient)
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED DBus Concurrent Gui WaylandClient)
 find_package(KF5Wayland ${KF5_MIN_VERSION} CONFIG REQUIRED)
 find_package(PlasmaWaylandProtocols CONFIG REQUIRED)
 

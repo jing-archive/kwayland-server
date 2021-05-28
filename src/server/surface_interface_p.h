@@ -92,6 +92,10 @@ public:
     QMatrix4x4 buildSurfaceToBufferMatrix(const State *state);
     void swapStates(State *source, State *target, bool emitChanged);
 
+    // casper_yang for scale
+    qreal inputAreaScale = 1;
+    bool useDefaultScale = true;
+
     CompositorInterface *compositor;
     SurfaceInterface *q;
     SurfaceRole *role = nullptr;

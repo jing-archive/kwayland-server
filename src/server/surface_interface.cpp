@@ -20,6 +20,10 @@
 // std
 #include <algorithm>
 
+// QT
+#include <QDebug>
+#include <QtDBus>
+
 namespace KWaylandServer
 {
 
@@ -607,6 +611,7 @@ void SurfaceInterfacePrivate::swapStates(State *source, State *target, bool emit
     }
     surfaceToBufferMatrix = buildSurfaceToBufferMatrix(target);
     bufferToSurfaceMatrix = surfaceToBufferMatrix.inverted();
+    // casper_yang for scale
     inputRegion = target->input & QRect(QPoint(0, 0), target->size);
     if (opaqueRegionChanged) {
         emit q->opaqueChanged(target->opaque);
@@ -887,19 +892,23 @@ SurfaceInterface *SurfaceInterface::inputSurfaceAt(const QPointF &position)
     if (!isMapped()) {
         return nullptr;
     }
+
+    // casper_yang for scale
+    QPointF newPos = position /  d->inputAreaScale;
+
     // go from top to bottom. Top most child is last in list
     QListIterator<SubSurfaceInterface *> it(d->current.children);
     it.toBack();
     while (it.hasPrevious()) {
         const auto &current = it.previous();
         auto surface = current->surface();
-        if (auto s = surface->inputSurfaceAt(position - current->position())) {
+        if (auto s = surface->inputSurfaceAt(newPos - current->position())) {
             return s;
         }
     }
     // check whether the geometry and input region contain the pos
-    if (!size().isEmpty() && QRectF(QPoint(0, 0), size()).contains(position) &&
-            input().contains(position.toPoint())) {
+    if (!size().isEmpty() && QRectF(QPoint(0, 0), size()).contains(newPos) &&
+            input().contains(newPos.toPoint())) {
         return this;
     }
     return nullptr;
@@ -928,6 +937,22 @@ void SurfaceInterface::setDataProxy(SurfaceInterface *surface)
 SurfaceInterface* SurfaceInterface::dataProxy() const
 {
     return d->dataProxy;
+}
+
+// casper_yang for scale
+void SurfaceInterface::setInputAreaScale(qreal scale)
+{
+    d->useDefaultScale = false;
+    if (d->inputAreaScale == scale) {
+        return;
+    }
+    d->inputAreaScale = scale;
+    emit inputAreaScaleChanged(scale);
+}
+
+qreal SurfaceInterface::getInputAreaScale()
+{
+    return d->inputAreaScale;
 }
 
 QPointF SurfaceInterface::mapToBuffer(const QPointF &point) const

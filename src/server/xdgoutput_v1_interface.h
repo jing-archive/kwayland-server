@@ -17,6 +17,7 @@
  * but for the sake of sanity, we should treat XdgOutputs as globals like Output is
  * Hence this doesn't match most of kwayland API paradigms.
  */
+struct wl_client;
 
 namespace KWaylandServer
 {
@@ -112,6 +113,11 @@ public:
      */
     void done();
 
+    // casper_yang for scale
+    void setClientScale(wl_client* client, qreal scale);
+    void unsetClientScale(wl_client* client);
+
+    void setAppDefaultScale(qreal scale);
 private:
     explicit XdgOutputV1Interface(QObject *parent);
     friend class XdgOutputManagerV1Interface;

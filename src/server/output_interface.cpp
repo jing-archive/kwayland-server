@@ -386,6 +386,7 @@ void OutputInterface::Private::sendScale(const ResourceData &data)
     if (data.version < 2) {
         return;
     }
+
     wl_output_send_scale(data.resource, scale);
 }
 
