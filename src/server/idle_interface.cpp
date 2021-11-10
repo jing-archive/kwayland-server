@@ -142,6 +142,10 @@ void IdleTimeoutInterface::setup(quint32 timeout)
     if (timer) {
         return;
     }
+
+    if (timeout > INT_MAX)
+        timeout = INT_MAX;
+
     timer = new QTimer(this);
     timer->setSingleShot(true);
     // less than 500 msec is not idle by definition

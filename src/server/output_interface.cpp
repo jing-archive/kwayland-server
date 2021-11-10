@@ -337,6 +337,8 @@ void OutputInterface::Private::bind(wl_client *client, uint32_t version, uint32_
 
     sendDone(r);
     c->flush();
+
+    emit q->bound(display->getConnection(client), r.resource);
 }
 
 void OutputInterface::Private::unbind(wl_resource *resource)
@@ -386,7 +388,6 @@ void OutputInterface::Private::sendScale(const ResourceData &data)
     if (data.version < 2) {
         return;
     }
-
     wl_output_send_scale(data.resource, scale);
 }
 

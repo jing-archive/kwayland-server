@@ -10,6 +10,7 @@
 #include "utils.h"
 
 #include <qwayland-server-plasma-shell.h>
+
 namespace KWaylandServer
 {
 

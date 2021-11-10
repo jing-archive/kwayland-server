@@ -198,6 +198,7 @@ ClientConnection *Display::createClient(int fd)
     Q_ASSERT(d->display);
     wl_client *c = wl_client_create(d->display, fd);
     if (!c) {
+        qWarning() << "ERROF:createClient";
         return nullptr;
     }
     return getConnection(c);

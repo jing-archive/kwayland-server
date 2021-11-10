@@ -1,0 +1,42 @@
+kwayland-server (5.20.5) focal; urgency=medium
+
+  * Format version
+
+ -- JingOS CI <jingos@jingos.com>  Nov, 10 Wed 2021 19:43:47 +0800
+
+kwayland-server (5.20.5-0neon) focal; urgency=medium
+
+  * New release
+
+ -- Neon CI <neon@kde.org>  Tue, 05 Jan 2021 15:28:45 +0000
+
+kwayland-server (5.20.4-0neon) focal; urgency=medium
+
+  * New release
+
+ -- Neon CI <neon@kde.org>  Tue, 01 Dec 2020 15:19:20 +0000
+
+kwayland-server (5.20.3-0neon) focal; urgency=medium
+
+  * New release
+
+ -- Neon CI <neon@kde.org>  Tue, 10 Nov 2020 21:15:31 +0000
+
+kwayland-server (5.20.2-0neon) focal; urgency=medium
+
+  * New release
+
+ -- Neon CI <neon@kde.org>  Tue, 27 Oct 2020 16:29:23 +0000
+
+kwayland-server (5.20.1-0neon) focal; urgency=medium
+
+  [ Pino Toscano ]
+  * Initial packaging.
+
+  [ Jonathan Riddell ]
+  * new release
+
+  [ Neon CI ]
+  * New release
+
+ -- Neon CI <neon@kde.org>  Tue, 20 Oct 2020 13:06:43 +0000

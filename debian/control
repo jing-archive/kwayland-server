@@ -1,0 +1,60 @@
+Source: kwayland-server
+Section: libs
+Priority: optional
+Maintainer: Debian/Kubuntu Qt/KDE Maintainers <debian-qt-kde@lists.debian.org>
+Uploaders: Pino Toscano <pino@debian.org>
+Build-Depends: cmake (>= 3.5~),
+               debhelper (>= 12),
+               extra-cmake-modules (>= 5.70.0~),
+               libegl-dev,
+               libkf5wayland-dev (>= 5.70.0~),
+               libqt5waylandclient5-dev (>= 5.14.0~),
+               libwayland-dev (>= 1.15~),
+               pkg-config,
+               pkg-kde-tools (>= 0.15.18~),
+               plasma-wayland-protocols,
+               qtbase5-dev (>= 5.14.0~),
+               qtwayland5-dev-tools (>= 5.14.0~),
+               wayland-protocols
+Standards-Version: 4.5.0
+Rules-Requires-Root: no
+Homepage: https://invent.kde.org/plasma/kwayland-server
+Vcs-Browser: https://salsa.debian.org/qt-kde-team/kde/kwayland-server
+Vcs-Git: https://salsa.debian.org/qt-kde-team/kde/kwayland-server.git
+
+Package: libkwaylandserver5-1
+Architecture: any
+Multi-Arch: same
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Breaks: libkwaylandserver5 (<< 5.20.1)
+Conflicts: libkwaylandserver5 (<< 5.20.1)
+Description: Qt library wrapper for Wayland libraries
+ KWaylandServier provides a Qt-style Server library wrapper for
+ the Wayland libraries.
+ .
+ This package contains the shared library.
+
+Package: libkwaylandserver-dev
+Section: libdevel
+Architecture: any
+Depends: libkf5wayland-dev (>= 5.70.0~),
+         libkwaylandserver5-1 (= ${binary:Version}),
+         qtbase5-dev (>= 5.14.0~),
+         ${misc:Depends}
+Description: development files for kwaylandserver
+ KWaylandServier provides a Qt-style Server library wrapper for
+ the Wayland libraries.
+ .
+ This package contains the development files for kwaylandserver.
+
+Package: libkwaylandserver5
+Architecture: any
+Multi-Arch: same
+Depends: libkwaylandserver5-1, ${misc:Depends}, ${shlibs:Depends}
+Priority: extra
+Section: oldlibs
+Description: Qt library wrapper for Wayland libraries - transitional
+ KWaylandServier provides a Qt-style Server library wrapper for
+ the Wayland libraries.
+ .
+ This package is a dummy and can be removed.

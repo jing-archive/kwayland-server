@@ -326,6 +326,7 @@ void SurfaceInterfacePrivate::surface_frame(Resource *resource, uint32_t callbac
         return;
     }
     pending.frameCallbacks.append(new KWaylandFrameCallback(callbackResource, q));
+    qDebug()<<"Sleep_noresponse:"<<pending.frameCallbacks.size()<<" "<<q->client()->processId();
 }
 
 void SurfaceInterfacePrivate::surface_set_opaque_region(Resource *resource, struct ::wl_resource *region)
@@ -424,6 +425,11 @@ void SurfaceInterface::frameRendered(quint32 msec)
     if (needsFlush)  {
         client()->flush();
     }
+}
+
+bool SurfaceInterface::hasFrameCallbacks() const
+{
+    return !d->current.frameCallbacks.isEmpty();
 }
 
 QMatrix4x4 SurfaceInterfacePrivate::buildSurfaceToBufferMatrix(const State *state)
@@ -534,6 +540,7 @@ void SurfaceInterfacePrivate::swapStates(State *source, State *target, bool emit
         target->children = source->children;
     }
     target->frameCallbacks.append(source->frameCallbacks);
+    qDebug()<<"Sleep_noresponse:"<<target->frameCallbacks.size();
 
     if (shadowChanged) {
         target->shadow = source->shadow;
@@ -682,6 +689,9 @@ void SurfaceInterfacePrivate::commit()
     if (!subSurface) {
         swapStates(&pending, &current, true);
 
+        if (current.frameCallbacks.size() > 500) {
+            q->frameRendered(100);
+        }
         // The position of a sub-surface is applied when its parent is committed.
         const QList<SubSurfaceInterface *> children = current.children;
         for (SubSurfaceInterface *subsurface : children) {
@@ -837,6 +847,7 @@ void SurfaceInterface::setOutputs(const QVector<OutputInterface *> &outputs)
             d->send_leave(outputResource);
         }
         disconnect(d->outputDestroyedConnections.take(*it));
+        disconnect(d->outputBoundConnections.take(*it));
     }
     QVector<OutputInterface *> addedOutputsOutputs = outputs;
     for (auto it = d->outputs.constBegin(), end = d->outputs.constEnd(); it != end; ++it) {
@@ -854,8 +865,15 @@ void SurfaceInterface::setOutputs(const QVector<OutputInterface *> &outputs)
             if (outputs.removeOne(o)) {
                 setOutputs(outputs);
             }});
+
+        Q_ASSERT(!d->outputBoundConnections.contains(o));
+        d->outputBoundConnections[o] = connect(o, &OutputInterface::bound, this, [this](ClientConnection *c, wl_resource *outputResource) {
+            if (c != client()) {
+                return;
+            }
+            d->send_enter(outputResource);
+        });
     }
-    // TODO: send enter when the client binds the OutputInterface another time
 
     d->outputs = outputs;
     for (auto child : d->current.children) {

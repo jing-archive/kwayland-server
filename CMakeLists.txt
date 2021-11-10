@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 3.5)
-set(PROJECT_VERSION "5.20.80")
+set(PROJECT_VERSION "5.21.80")
 set(PROJECT_VERSION_MAJOR 5)
 set(CMAKE_BUILD_TYPE "Debug")
 set(CMAKE_CXX_FLAGS_DEBUG "$ENV{CXXFLAGS} -O0 -Wall -g -ggdb")
 set(CMAKE_CXX_FLAGS_RELEASE "$ENV{CXXFLAGS} -O3 -Wall")
 
 set(QT_MIN_VERSION "5.15.0")
-set(KF5_MIN_VERSION "5.74")
+set(KF5_MIN_VERSION "5.78")
 set(WAYLAND_MIN_VERSION "1.15")
 
 project(KWaylandServer VERSION ${PROJECT_VERSION})
@@ -55,7 +55,7 @@ set_package_properties(Wayland PROPERTIES
 
 find_package(WaylandScanner)
 
-find_package(WaylandProtocols 1.18)
+find_package(WaylandProtocols 1.19)
 set_package_properties(WaylandProtocols PROPERTIES TYPE REQUIRED)
 
 find_package(EGL)
@@ -78,8 +78,8 @@ endif()
 add_subdirectory(src)
 
 if (BUILD_TESTING)
-    add_subdirectory(autotests)
-    add_subdirectory(tests)
+	#add_subdirectory(autotests)
+	#add_subdirectory(tests)
 endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them

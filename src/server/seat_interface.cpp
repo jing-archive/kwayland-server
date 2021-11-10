@@ -1305,7 +1305,9 @@ qint32 SeatInterface::touchDown(const QPointF &globalPosition)
 void SeatInterface::touchMove(qint32 id, const QPointF &globalPosition)
 {
     Q_D();
-    Q_ASSERT(d->globalTouch.ids.contains(id));
+    if (!d->globalTouch.ids.contains(id)) {
+        return;
+    }
     // casper_yang for scale
     qreal eventScale = 1.;
     if (d->globalTouch.focus.surface) {
@@ -1338,7 +1340,9 @@ void SeatInterface::touchMove(qint32 id, const QPointF &globalPosition)
 void SeatInterface::touchUp(qint32 id)
 {
     Q_D();
-    Q_ASSERT(d->globalTouch.ids.contains(id));
+    if (!d->globalTouch.ids.contains(id)) {
+        return;
+    }
     const qint32 serial = display()->nextSerial();
     if (d->drag.mode == Private::Drag::Mode::Touch &&
             d->drag.source->dragImplicitGrabSerial() == d->globalTouch.ids.value(id)) {
@@ -1367,6 +1371,10 @@ void SeatInterface::touchUp(qint32 id)
 
 void SeatInterface::touchFrame()
 {
+    if (!isTouchSequence()) {
+        // changing surface not allowed during a touch sequence
+        return;
+    }
     Q_D();
     for (auto it = d->globalTouch.focus.touchs.constBegin(), end = d->globalTouch.focus.touchs.constEnd(); it != end; ++it) {
         (*it)->frame();
